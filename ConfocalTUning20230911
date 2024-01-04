@@ -1,0 +1,65 @@
+clear
+clc
+
+%% load TIF stack
+
+[filename, pathname] = uigetfile('*.tif', 'SWIR images:');
+data = tiffreadVolume([pathname filename]);
+
+ch1 = double(data(:,:,1:3:end));
+ch1 = mean(ch1, 3);
+
+ch2 = double(data(:,:,2:3:end));
+ch2 = mean(ch2, 3);
+
+ch3 = double(data(:,:,3:3:end));
+ch3 = mean(ch3, 3);
+
+% min(ch1, [], 'all')
+% max(ch1, [], 'all')
+
+% figure
+% % imshow(ch1, [])
+% imshow(ch1, [0 20])
+% colorbar
+
+%% process data
+
+ch4 = ch1.^2;
+ch4 = ch4/max(ch4, [], 'all');
+ch4(ch4>0.05) = 0.05;
+ch4 = ch4/0.05*255;
+ch4 = uint8(ch4);
+
+ch2 = ch2/max(ch2, [], 'all')*255;
+ch2 = uint8(ch2);
+
+ch3 = ch3/max(ch3, [], 'all')*255;
+ch3 = uint8(ch3);
+
+
+%% output images
+
+tagstruct.ImageLength = size(ch4,1);
+tagstruct.ImageWidth = size(ch4,2);
+tagstruct.Photometric = Tiff.Photometric.MinIsBlack;
+tagstruct.BitsPerSample = 8;
+tagstruct.PlanarConfiguration = Tiff.PlanarConfiguration.Chunky;
+
+t = Tiff('Cy5-BSA.tif', 'w');
+setTag(t,tagstruct)
+write(t, ch4)
+close(t)
+
+t = Tiff('naFluo.tif', 'w');
+setTag(t,tagstruct)
+write(t, ch2)
+close(t)
+
+t = Tiff('DAPI.tif', 'w');
+setTag(t,tagstruct)
+write(t, ch3)
+close(t)
+
+
+
