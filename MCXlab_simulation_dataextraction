@@ -1,0 +1,42 @@
+addpath('F:\light_simulation\NV\mcx-master\utils')
+addpath('F:\light_simulation\NV1\mcxlab')
+addpath('F:\light_simulation\NV\iso2mesh')
+
+%%%%X轴等高线提取
+data_axils=200;
+data_matrix=squeeze(-log10(fcw(data_axils,1:380,1:208)));%指定特定光源边缘坐标，提取数据，用于展示结果
+figure();
+data_matrix_transf=data_matrix.';%更换坐标，方便与cfg.vol进行对比
+contour(data_matrix_transf,'ShowText','on','LevelList',[4.5 4.6 4.7 4.8 4.9 5 5.5 6])
+xlim([120 260]);ylim([0 180]);
+xlim([120 260]);ylim([90 180]);%进一步展示脑组织图像
+daspect([1 1 1])%等轴刻度
+%%%一下为cfg.vol进行小鼠头部结果展示
+figure()
+mcxpreview(cfg);
+view([-90 0 0])
+xlim([data_axils-10 data_axils+10]);ylim([120 260]);zlim([0 180])
+ ylim([120 260]);zlim([90 180])
+daspect([1 1 1])%等轴刻度
+
+%%%%Z轴等高线提取
+data_axils=170;
+data_matrix=squeeze(-log10(fcw(1:400,1:380,data_axils)));%指定特定光源边缘坐标，提取数据，用于展示结果
+figure();
+data_matrix_transf=data_matrix.';%更换坐标，方便与cfg.vol进行对比
+contour(data_matrix_transf,'ShowText','on','LevelList',[3 3.5 4 4.5 5 5.5 6])
+daspect([1 1 1])%等轴刻度
+%%%一下为cfg.vol进行小鼠头部结果展示
+figure()
+mcxpreview(cfg);
+view([0 0 90])
+xlim([1 400]);ylim([1 380]);zlim([data_axils-10 data_axils+10])
+daspect([1 1 1])%等轴刻度
+
+
+%%%立体登高面
+figure();
+isosurface(-log10(fcw(1:992,1:380,1:208)),5.5)
+xlabel('X-zxis');ylabel('Y-axis');zlabel('Z-axis')
+xlim([120 260]);ylim([0 400]);zlim([0 310])
+daspect([1 1 1])%等轴刻度
